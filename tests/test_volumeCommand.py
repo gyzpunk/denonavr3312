@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from ..classes.commands import VolumeCommand
+from denonavr3312.classes.commands import VolumeCommand
 
 class TestVolumeCommand(unittest.TestCase):
 

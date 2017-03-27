@@ -12,6 +12,5 @@ setup(
     author='Florent Captier',
     author_email='florent@captier.org',
     description='Control Denon AVR 3312 through telnet interface',
-    #zip_safe=False,
-    tests_require=['tox']
+    tests_require=['tox', 'pytest']
 )
