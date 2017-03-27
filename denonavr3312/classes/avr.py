@@ -5,10 +5,12 @@ import logging
 import telnetlib
 from socket import error
 from .commands import PowerCommand, VolumeCommand, MuteCommand, ZoneCommand
+from .. import COMMAND_MUTE, COMMAND_ZONE_2, COMMAND_ZONE_3
 
 logger = logging.getLogger(__name__)
 
-class DenonAVR():
+
+class DenonAVR:
     COMMAND_TPL = "{cmd}{param}\r"
     RESPONSE_TIMEOUT = 0.200
     CONNECT_TIMEOUT = 10
@@ -21,8 +23,8 @@ class DenonAVR():
         self.power = PowerCommand(self)
         self.master_volume = VolumeCommand(self)
         self.mute = MuteCommand(self)
-        self.zone2 = Zone(self, 'Z2')
-        self.zone3 = Zone(self, 'Z3')
+        self.zone2 = Zone(self, COMMAND_ZONE_2)
+        self.zone3 = Zone(self, COMMAND_ZONE_3)
 
         self.open()
 
@@ -42,7 +44,7 @@ class DenonAVR():
         self._conn.close()
         logger.debug('Remaining messages in the queue: %s', self._conn.read_all())
 
-    def sendCommand(self, command, parameter):
+    def send_command(self, command, parameter):
         format_cmd = self.COMMAND_TPL.format(cmd=command, param=parameter).encode('ascii')
         self._conn.write(format_cmd)
         response = self._conn.read_until(b"\r", timeout=self.RESPONSE_TIMEOUT)
@@ -60,14 +62,14 @@ class DenonAVR():
         self.close()
 
 
-class Zone():
+class Zone:
     def __init__(self, denon_avr, zone_name):
         self._zone_name = zone_name
         self._denon_avr = denon_avr
 
         self._control = ZoneCommand(self._denon_avr, self._zone_name)
         self.volume = VolumeCommand(self._denon_avr, self._zone_name)
-        self.mute = MuteCommand(self._denon_avr, self._zone_name)
+        self.mute = MuteCommand(self._denon_avr, self._zone_name + COMMAND_MUTE)
 
     def __repr__(self):
         return '%s-%s' % (self._denon_avr, self._zone_name)

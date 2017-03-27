@@ -4,15 +4,12 @@
 import logging
 import time
 import math
+from .. import PARAMETER_STATUS, PARAMETER_STANDBY, PARAMETER_DOWN, \
+    PARAMETER_OFF, PARAMETER_ON, PARAMETER_UP, COMMAND_POWER, COMMAND_MUTE, \
+    COMMAND_MASTER_VOLUME
 
 logger = logging.getLogger(__name__)
 
-COMMAND_ON = 'ON'
-COMMAND_OFF = 'OFF'
-COMMAND_STATUS = '?'
-COMMAND_STANDBY = 'STANDBY'
-COMMAND_UP = 'UP'
-COMMAND_DOWN = 'DOWN'
 
 class CommandBase(object):
     command = None
@@ -23,10 +20,10 @@ class CommandBase(object):
             self.command = command
 
     def send(self, parameter):
-        return self._denon_avr.sendCommand(self.command, parameter)
+        return self._denon_avr.send_command(self.command, parameter)
 
     def status(self):
-        return self.send(COMMAND_STATUS)
+        return self.send(PARAMETER_STATUS)
 
     def _extract_parameter(self, message):
         return message.replace(self.command, '').rstrip("\r")
@@ -35,61 +32,61 @@ class CommandBase(object):
 class OnOffCommandBase(CommandBase):
 
     def on(self):
-        return self.send(COMMAND_ON)
+        return self.send(PARAMETER_ON)
 
     def off(self):
-        return self.send(COMMAND_OFF)
+        return self.send(PARAMETER_OFF)
 
 
 class PowerCommand(CommandBase):
-    command = 'PW'
+    command = COMMAND_POWER
 
     def on(self):
-        r = self.send(COMMAND_ON)
+        r = self.send(PARAMETER_ON)
         time.sleep(1)
         return r
 
     def standby(self):
-        return self.send(COMMAND_STANDBY)
+        return self.send(PARAMETER_STANDBY)
 
 
 class VolumeCommand(CommandBase):
-    command = 'MV'
+    command = COMMAND_MASTER_VOLUME
 
     ZERO_LEVEL = 80
     MINIMUM_LEVEL = 99
 
     def up(self):
-        return self.send(COMMAND_UP)
+        return self.send(PARAMETER_UP)
 
     def down(self):
-        return self.send(COMMAND_DOWN)
+        return self.send(PARAMETER_DOWN)
 
-    def set(self, volume=0):
-        return self.send(self._convertFromDb(volume))
+    def set(self, volume=0.0):
+        return self.send(self._convert_from_db(volume))
 
     def minimum(self):
         return self.send(self.MINIMUM_LEVEL)
 
     def status(self):
         status = super(VolumeCommand, self).status()
-        return self._convertToDb(int(self._extract_parameter(status)))
+        return self._convert_to_db(int(self._extract_parameter(status)))
 
-    def _convertFromDb(self, volume):
+    def _convert_from_db(self, volume):
         steps = int(math.floor(volume / 0.5))  # Calculate the number of 0.5dB steps
-        level = self.ZERO_LEVEL * 10 + (steps * 5)  #  Normalize ZERO_LEVEL to be 3 digits long and add the number of steps
-        level = level if level % 10 else level / 10  #  Normalize level to be 2 digits long if being a 1dB value
+        level = self.ZERO_LEVEL * 10 + (steps * 5)  # Normalize ZERO_LEVEL to be 3 digits long and add the number of steps
+        level = level if level % 10 else level / 10  # Normalize level to be 2 digits long if being a 1dB value
         return level
 
-    def _convertToDb(self, level):
-        level = level if level % 10 else level * 10  # Normalize level if not with 3 digits
+    def _convert_to_db(self, level):
+        level = level if level / 100 > 1 else level * 10  # Normalize level if not with 3 digits
         steps = (level - self.ZERO_LEVEL * 10) / 5  # Calculate the number of 0.5dB steps
         return 0.0 + (steps * 0.5)
 
 
 class MuteCommand(OnOffCommandBase):
-    command = 'MU'
+    command = COMMAND_MUTE
 
 
 class ZoneCommand(OnOffCommandBase):
-    command = 'Z2'
+    pass

@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='denonavr3312',
     version='0.0.0',
-    packages=['denonavr3312'],
+    packages=find_packages(),
     url='',
     license='',
     author='Florent Captier',
     author_email='florent@captier.org',
     description='Control Denon AVR 3312 through telnet interface',
-    requires=open('requirements.txt', 'r').readlines()
+    #zip_safe=False,
+    tests_require=['tox']
 )
