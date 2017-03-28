@@ -32,10 +32,13 @@ class DenonAVR:
         return self._address
 
     def open(self):
+        if not self._address:
+            return
+
         try:
             logger.debug('Start telnet connection to %s', self._address)
             self._conn = telnetlib.Telnet(self._address, self.TELNET_PORT, timeout=self.CONNECT_TIMEOUT)
-        except error as e:
+        except error as e:  # pragma: no cover
             logger.error('Error when opening telnet connection: %s', e)
             raise e
 
