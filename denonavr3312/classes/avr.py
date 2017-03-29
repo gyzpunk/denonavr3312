@@ -42,9 +42,6 @@ class DenonAVR(object):
         Open the connection to Denon device
         :return: None
         """
-        if not self._address:
-            return
-
         try:
             __logger__.debug('Start telnet connection to %s', self._address)
             self._conn = telnetlib.Telnet(self._address,
@@ -76,7 +73,7 @@ class DenonAVR(object):
         response = self._conn.read_until(b"\r", timeout=self.RESPONSE_TIMEOUT)
         response = response.decode('ascii')
         __logger__.debug('Response to command %s: %s',
-                         format_cmd.rstrip("\r"),
+                         format_cmd.rstrip(b"\r"),
                          response.rstrip("\r"))
         return response
 
