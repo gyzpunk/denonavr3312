@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=wrong-import-position
+
+"""
+Module to control Denon AVR device through telnet control protocol
+"""
 
 COMMAND_POWER = 'PW'
 COMMAND_MUTE = 'MU'
