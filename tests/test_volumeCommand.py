@@ -8,7 +8,6 @@ except ImportError:
     from mock import MagicMock
 
 from denonavr3312.classes.commands import VolumeCommand
-from denonavr3312 import PARAMETER_UP, PARAMETER_DOWN
 
 class TestVolumeCommand(unittest.TestCase):
 
@@ -39,18 +38,6 @@ class TestVolumeCommand(unittest.TestCase):
         for (db, lvl) in self._dbs_to_levels.items():
             self._volume.set(float(db))
             self._volume.send.assert_called_with(int(lvl))
-
-    def test_up(self):
-        """Test increasing volume."""
-        self._mock_send()
-        self._volume.up()
-        self._volume.send.assert_called_with(PARAMETER_UP)
-
-    def test_down(self):
-        """Test decreasing volume."""
-        self._mock_send()
-        self._volume.down()
-        self._volume.send.assert_called_with(PARAMETER_DOWN)
 
     def test_minimum(self):
         """Test put volume to minimum."""
