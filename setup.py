@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='denonavr3312',
-    version='0.1.0',
+    use_scm_version=True,
     packages=find_packages(),
     url='https://github.com/gyzpunk/denonavr3312',
     license='GNU',
@@ -13,6 +13,7 @@ setup(
     author_email='florent@captier.org',
     description='Control Denon AVR 3312 through telnet interface',
     tests_require=['tox', 'pytest'],
+    setup_requires=['setuptools_scm'],
     platforms=['any'],
     classifiers=[
         "Development Status :: 4 - Beta",
